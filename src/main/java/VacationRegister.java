@@ -19,7 +19,7 @@ public class VacationRegister {
                         "</head>\n" +
                         "<body>\n" +
                         "<H2>Registered Vacations</H2>\n" +
-                        "<table border=\"5\" cellpadding=\"10 \" cellspacing=\"0\">\n" +
+                        "<table border=\"5\" cellpadding=\"20 \" cellspacing=\"1 \">\n" +
                         "<tr>\n" +
                         "<th> Name </th>\n" +
                         "<th> Email </th>\n" +
