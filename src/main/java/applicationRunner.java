@@ -56,16 +56,6 @@ public class applicationRunner {
                 //while ()
             }
 
-/*
-            for (String n : nameList) {
-                for (int i : iDlist) {
-                    sB.append("<tr>")
-                            .append("<td>").append(i).append("</td>\n")
-                    .append("<td>").append(n).append("</td>\n");  //<------------funker
-
-                }
-            }*/
-
             sB.append("</tr>\n" +
                     "</table>\n"
                     + "</body>\n"
