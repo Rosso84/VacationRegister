@@ -1,9 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import Connections.DbConnect;
 import org.apache.commons.io.FileUtils;
@@ -12,22 +9,23 @@ public class applicationRunner {
 
     public static void main(String[] args) {
         DbConnect dbconnect = new DbConnect();
-        String query = "select personer.person_id, personer.navn, personer.email, datoer.dato\n" +
-                "from personer\n" +
-                "inner join datoer ON personer.person_id=datoer.person_id; ";
+        String queryDatoer = "SELECT person_id, dato FROM datoer  ";
+        String queryPersoner = "SELECT person_id, navn, email FROM Personer ";
 
         try {
 
             Connection con = dbconnect.getConnection();
-            PreparedStatement prstmt = con.prepareStatement(query);
-            ResultSet res = prstmt.executeQuery();
-            ResultSetMetaData resMeta = res.getMetaData();
 
+            //query Personer
+            PreparedStatement prstmPersoner = con.prepareStatement(queryPersoner);
+            ResultSet resultSetPersoner = prstmPersoner.executeQuery();
+            ResultSetMetaData resMetaPersoner = resultSetPersoner.getMetaData();
 
-            String pers_idCol = resMeta.getColumnName(1);
-            String nameCol = resMeta.getColumnName(2);
-            String emailCol = resMeta.getColumnName(3);
-            String dateCol = resMeta.getColumnName(4);
+            //query Datoer
+            PreparedStatement prstmtDatoer = con.prepareStatement(queryDatoer);
+            ResultSet resultSetDatoer = prstmtDatoer.executeQuery();
+            ResultSetMetaData resMetaDatoer = resultSetDatoer.getMetaData();
+
 
             StringBuilder sB = new StringBuilder();
             sB.append(
@@ -41,56 +39,32 @@ public class applicationRunner {
                             "<H2>Registered Vacations</H2>\n" +
                             "<table border=\"5\" cellpadding=\"10 \" cellspacing=\"0 \">\n" +
                             "<tr>\n" +
-                            "<th> " + pers_idCol + " </th>\n" +
-                            "<th>" + nameCol + "</th>\n" +
-                            "<th>" + emailCol + "</th>\n" +
-                            "<th colspan = \"25\">" + dateCol + "</th>\n" +
+                            "<th> " + resMetaPersoner.getColumnName(1) + " </th>\n" +
+                            "<th>" + resMetaPersoner.getColumnName(2) + "</th>\n" +
+                            "<th>" + resMetaPersoner.getColumnName(3) + "</th>\n" +
+                            "<th colspan = \"25\">" + resMetaDatoer.getColumnName(2) + "</th>\n" +
                             "</tr>\n");
 
-            /*while (res.next()) {
-                int id = res.getInt(1);
-                String name = res.getString(2);
-                String email = res.getString(3);
-                String date = res.getString(4);
+            while (resultSetPersoner.next()) {
+                int id = resultSetPersoner.getInt(1);
+                String name = resultSetPersoner.getString(2);
+                String email = resultSetPersoner.getString(3);
                 sB.append("<tr>"
                         + "<td>").append(id).append("</td>\n")
                         .append("<td>").append(name).append("</td>\n")
-                        .append("<td>").append(email).append("</td>\n")
-                        .append("<td>").append(date).append("</td>\n");
-            }*/
-
-            // removes duplicates of email and ids from 'INNER JOIN query'
-            HashSet<Integer> idSet = new HashSet<>();
-            HashSet<String> emailSet = new HashSet<>();
-            HashSet<String> nameSet = new HashSet<>();
-
-            while (res.next()) {
-                int id = res.getInt(1);
-                String name = res.getString(2);
-                String email = res.getString(3);
-
-                idSet.add(id);
-                emailSet.add(email);
-                nameSet.add(name);
+                        .append("<td>").append(email).append("</td>\n");
+                //while ()
             }
 
-            List<Integer> iDlist = new ArrayList<>(idSet);
-            List<String> nameList = new ArrayList<>(nameSet);
-            List<String> mailList = new ArrayList<>(emailSet);
-
-            for (int i : iDlist) {
-                sB.append("<tr>")
-                        .append("<td>").append(i).append("</td>\n");
-                        //.append("<td>").append(n).append("</td>\n");  //<------------funker
-
-            }
-
+/*
             for (String n : nameList) {
-                sB.append("<td>").append(n).append("</td>\n"); //<----------funker ikke
-            }
+                for (int i : iDlist) {
+                    sB.append("<tr>")
+                            .append("<td>").append(i).append("</td>\n")
+                    .append("<td>").append(n).append("</td>\n");  //<------------funker
 
-            System.out.println(nameList);
-
+                }
+            }*/
 
             sB.append("</tr>\n" +
                     "</table>\n"
