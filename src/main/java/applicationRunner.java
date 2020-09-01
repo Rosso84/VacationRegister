@@ -14,10 +14,14 @@ public class applicationRunner {
         ArrayList<Integer> ids = new ArrayList<>();
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> emails = new ArrayList<>();
-        HashMap<Integer, String[][]> idAndDateMap = new HashMap<>();
+        ArrayList<String> dates = new ArrayList<>();
 
-        String[][] dates = new String[40][40];
-        dates[0][0] = "1"; //id 1
+        //String[][] dates = new String[40][40];
+        //String[] dates = new String[40];
+        // HashMap<Integer, String[]> idAndDateMap = new HashMap<>(); //TODO: remove if not needed
+        HashMap<Integer, ArrayList<String>> idAndDateMap = new HashMap<>(); //TODO: remove if not needed
+
+      /*  dates[0][0] = "1"; //id 1
         dates[0][1] = "Da1";
         dates[0][2] = "Da2";
 
@@ -42,10 +46,9 @@ public class applicationRunner {
 
         dates[4][0] = "5";
         dates[4][1] = "mato1";
+        */
 
-        idAndDateMap.put(1, dates);
-/*
-        int cols = 5; // 5 ids
+    /*    int cols = 5; // 5 ids
         int rows = dates.length;
 
         for (int i = 0; i < cols; i++) {
@@ -59,9 +62,8 @@ public class applicationRunner {
                 }
             }
             System.out.println();
-        }*/
-
-
+        }
+*/
         String queryPersoner = "SELECT person_id, navn, email FROM Personer";
         String queryDatoer = "SELECT person_id, dato FROM datoer";
 
@@ -78,15 +80,38 @@ public class applicationRunner {
                 int id = resultSetPersoner.getInt(1);
                 String name = resultSetPersoner.getString(2);
                 String email = resultSetPersoner.getString(3);
-                ids.add(id);
+                //ids.add(id);
                 names.add(name);
                 emails.add(email);
+                idAndDateMap.putIfAbsent(id, new ArrayList<String>());
             }
 
             //query Datoer
             PreparedStatement prstmtDatoer = con.prepareStatement(queryDatoer);
             ResultSet resultSetDatoer = prstmtDatoer.executeQuery();
             ResultSetMetaData resMetaDato = resultSetDatoer.getMetaData();
+
+            while (resultSetDatoer.next()) {
+                int foreignKey = resultSetDatoer.getInt(1);
+                String date = resultSetDatoer.getString(2);
+                idAndDateMap.get(foreignKey).add(date);
+
+            }
+
+            //print content in map using
+            idAndDateMap.entrySet().forEach(entry -> {
+                System.out.println(entry.getKey() + " " + entry.getValue());
+            });
+
+            //print values from map older version
+     /*       for (int primaryK : idAndDateMap.keySet()) {
+                int key = primaryK;
+                ArrayList<String> value = idAndDateMap.get(key);
+                for (int n = 0; n < value.size(); n++) {
+                    System.out.println(key + ": " + value.get(n) + " | ");//TODO: Nothing prints, even using strings
+                }
+                System.out.println();
+            }*/
 
 
             StringBuilder sB = new StringBuilder();
@@ -113,7 +138,7 @@ public class applicationRunner {
                         "<td>" + names.get(i) + "</td>" +
                         "<td>" + emails.get(i) + "</td>");
 
-                int cols = ids.size();
+         /*       int cols = ids.size();
                 int rows = dates.length;
 
                 for (int k = 0; k < cols; k++) {
@@ -124,7 +149,7 @@ public class applicationRunner {
                             }
                     }
                     System.out.println();
-                }
+                }*/
                 sB.append("</tr>\n");
             }
             sB.append("</table>\n"
@@ -137,11 +162,13 @@ public class applicationRunner {
             FileUtils.readFileToString(htmlTemplateFile);
 
 
-        } catch (IOException | SQLException | ClassNotFoundException ioException) {
+        } catch (IOException | SQLException |
+                ClassNotFoundException ioException) {
             ioException.printStackTrace();
         }
-
     }
+
+
 }
 
 
